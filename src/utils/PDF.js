@@ -13,6 +13,18 @@ export async function save(pdfFile, objects, name) {
     console.log('Failed to load PDF.');
     throw e;
   }
+
+  async function bufferToBase64(buffer) {
+    // use a FileReader to generate a base64 data URI:
+    const base64url = await new Promise(r => {
+      const reader = new FileReader()
+      reader.onload = () => r(reader.result)
+      reader.readAsDataURL(new Blob([buffer]))
+    });
+    // remove the `data:...;base64,` part from the start
+    return base64url.slice(base64url.indexOf(',') + 1);
+  }
+
   const pagesProcesses = pdfDoc.getPages().map(async (page, pageIndex) => {
     const pageObjects = objects[pageIndex];
     // 'y' starts from bottom in PDFLib, use this to calculate y
@@ -93,6 +105,13 @@ export async function save(pdfFile, objects, name) {
   await Promise.all(pagesProcesses);
   try {
     const pdfBytes = await pdfDoc.save();
+    window.ReactNativeWebView.postMessage(
+      JSON.stringify({ 
+        name,
+        type: 'application/pdf', 
+        data: await bufferToBase64(pdfBytes) 
+      })
+    );
     download(pdfBytes, name, 'application/pdf');
   } catch (e) {
     console.log('Failed to save PDF.');
