@@ -27,11 +27,13 @@
   let selectedPageIndex = -1;
   let saving = false;
   let addingDrawing = false;
+  let disableChoose;
   // for test purpose
   onMount(async () => {
     try {
       const urlParams = new URLSearchParams(window.location.search);
       const pdfUrl = urlParams.get("pdfUrl");
+      disableChoose = urlParams.has("disableChoose") ? true : false;
       if (pdfUrl) {
         const res = await fetch(pdfUrl);
         const pdfBlob = await res.blob();
@@ -219,13 +221,15 @@
       class="hidden"
       on:change={onUploadImage}
     />
-    <label
-      class="whitespace-no-wrap bg-blue-500 hover:bg-blue-700 text-white
-      font-bold py-1 px-3 md:px-4 rounded mr-3 cursor-pointer md:mr-4"
-      for="pdf"
-    >
-      Choose PDF
-    </label>
+    {#if !disableChoose}
+      <label
+        class="whitespace-no-wrap bg-blue-500 hover:bg-blue-700 text-white
+        font-bold py-1 px-3 md:px-4 rounded mr-3 cursor-pointer md:mr-4"
+        for="pdf"
+      >
+        Choose PDF
+      </label>
+    {/if}
     <div
       class="relative mr-3 flex h-8 bg-gray-400 rounded-sm overflow-hidden
       md:mr-4"
