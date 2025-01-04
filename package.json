@@ -5,8 +5,8 @@
   "homepage": "https://pdf-editor.now.sh",
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c -w",
-    "start": "sirv public"
+    "dev": "rollup -c -w --host",
+    "start": "sirv public --host"
   },
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^2.1.2",
