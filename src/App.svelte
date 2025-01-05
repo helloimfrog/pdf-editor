@@ -32,7 +32,7 @@
   onMount(async () => {
     try {
       const urlParams = new URLSearchParams(window.location.search);
-      const pdfUrl = urlParams.get("pdfUrl");
+      const pdfUrl = decodeURIComponent(urlParams.get("pdfUrl"));
       disableChoose = urlParams.has("disableChoose") ? true : false;
       if (pdfUrl) {
         const res = await fetch(pdfUrl);
