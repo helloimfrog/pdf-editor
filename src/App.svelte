@@ -22,7 +22,7 @@
   let pages = [];
   let pagesScale = [];
   let allObjects = [];
-  let currentFont = "Times-Roman";
+  let currentFont = "Helvetica";
   let focusId = null;
   let selectedPageIndex = -1;
   let saving = false;
@@ -38,10 +38,11 @@
         const res = await fetch(pdfUrl);
         const pdfBlob = await res.blob();
         await addPDF(pdfBlob);
-        selectedPageIndex = 0; // setTimeout(() => {
-        //   fetchFont(currentFont);
-        //   prepareAssets();
-        // }, 5000);
+        selectedPageIndex = 0; 
+        setTimeout(() => {
+          fetchFont(currentFont);
+          prepareAssets();
+        }, 5000);
         // const imgBlob = await (await fetch("/test.jpg")).blob();
         // addImage(imgBlob);
         // addTextField("測試!");
@@ -281,12 +282,6 @@
     >
       {saving ? "Saving" : "Save"}
     </button>
-    <a href="https://github.com/ShizukuIchi/pdf-editor">
-      <img
-        src="/GitHub-Mark-32px.png"
-        alt="A GitHub icon leads to personal GitHub page"
-      />
-    </a>
   </div>
   {#if addingDrawing}
     <div
