@@ -28,6 +28,7 @@
   let saving = false;
   let addingDrawing = false;
   let disableChoose;
+  let loading = false;
   // for test purpose
   onMount(async () => {
     try {
@@ -35,10 +36,12 @@
       const pdfUrl = urlParams.get("pdfUrl");
       disableChoose = urlParams.has("disableChoose") ? true : false;
       if (pdfUrl) {
+        loading = true;
         const res = await fetch(pdfUrl);
         const pdfBlob = await res.blob();
         await addPDF(pdfBlob);
         selectedPageIndex = 0; 
+        loading = false;
         setTimeout(() => {
           fetchFont(currentFont);
           prepareAssets();
@@ -50,6 +53,7 @@
       }
     } catch (e) {
       console.log(e);
+      loading = false;
     }
   });
   async function onUploadPDF(e) {
@@ -57,11 +61,14 @@
     const file = files[0];
     if (!file || file.type !== "application/pdf") return;
     selectedPageIndex = -1;
+    loading = true;
     try {
       await addPDF(file);
       selectedPageIndex = 0;
+      loading = false;
     } catch (e) {
       console.log(e);
+      loading = false;
     }
   }
   async function addPDF(file) {
@@ -204,6 +211,14 @@
 />
 <Tailwind />
 <main class="flex flex-col items-center py-16 bg-gray-100 min-h-screen">
+  {#if loading}
+    <div class="fixed inset-0 flex items-center justify-center bg-gray-700 bg-opacity-50 z-50">
+      <div
+        class="circle"
+        style="--size: 60px; --colorInner: #676778; --colorCenter: #40B3FF; --colorOuter: #FF3E00; --durationInner: 1.5s; --durationCenter: 3s; --durationOuter: 2s;"
+      />
+    </div>
+  {/if}
   <div
     class="fixed z-10 top-0 left-0 right-0 h-12 flex justify-center items-center
     bg-gray-200 border-b border-gray-300"
@@ -386,3 +401,49 @@
     </div>
   {/if}
 </main>
+
+<style>
+	.circle {
+		width: var(--size);
+		height: var(--size);
+		box-sizing: border-box;
+		position: relative;
+		border: 3px solid transparent;
+		border-top-color: var(--colorOuter);
+		border-radius: 50%;
+		animation: circleSpin var(--durationOuter) linear infinite;
+	}
+	.circle::before,
+	.circle::after {
+		content: '';
+		box-sizing: border-box;
+		position: absolute;
+		border: 3px solid transparent;
+		border-radius: 50%;
+	}
+	.circle::after {
+		border-top-color: var(--colorInner);
+		top: 9px;
+		left: 9px;
+		right: 9px;
+		bottom: 9px;
+		animation: circleSpin var(--durationInner) linear infinite;
+	}
+	.circle::before {
+		border-top-color: var(--colorCenter);
+		top: 3px;
+		left: 3px;
+		right: 3px;
+		bottom: 3px;
+		animation: circleSpin var(--durationCenter) linear infinite;
+	}
+
+	@keyframes circleSpin {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+</style>
